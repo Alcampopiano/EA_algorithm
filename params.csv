@@ -1,0 +1,2 @@
+fname,mapname,limit,real_limit,tolerance
+example_data.csv,example_map.csv,42,50,3
