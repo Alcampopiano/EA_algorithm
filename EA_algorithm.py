@@ -37,9 +37,6 @@ def init(params_df, map_df):
     df=pd.read_csv(params_df['fname'][0])
     df_stu=pd.DataFrame(columns=[])
 
-    # cols=df.columns
-    # cols=[c for c in cols if 'Overall Level' in c]
-    # cols.sort()
     cols=map_df.index
 
     df_stu['student']=df['Student Name']
@@ -49,7 +46,6 @@ def init(params_df, map_df):
     df_stu['student']=df['Student Name']
     df_stu['DOB']=df['Student Date of Birth']
 
-    #for c, m in zip(cols, map_df.index):
     for c in cols:
         nums=[]
 
@@ -84,8 +80,14 @@ def init(params_df, map_df):
 
 def adjust_values(df_stu, params_df, map_df, stop_flag=False):
 
+    grp_labels = ['group ' + str(g) for g in map_df['group'].unique()]
+    group_nums = map_df['group'].unique()
 
-    df_stu['mean']=df_stu.agg('mean', axis=1)
+    for lab, num in zip(grp_labels, group_nums):
+        inds = map_df[map_df['group'] == num].index
+        df_stu[lab]=df_stu[inds].mean(axis=1)
+
+    df_stu['mean']=df_stu[grp_labels].agg('mean', axis=1)
     df_sch=df_stu.groupby(['school', 'family'])[['mean']].sum()
     df_stu.drop('mean', axis=1, inplace=True)
     df_sch.rename(columns={'mean':'prop_of_EAs'}, inplace=True)
@@ -105,11 +107,9 @@ def adjust_values(df_stu, params_df, map_df, stop_flag=False):
         stop_flag=True
 
     elif total<params_df['limit'][0]:
-        #print('up')
         df_stu[numeric_cols] += .001
 
     elif total>params_df['limit'][0]:
-        #print('down')
         df_stu[numeric_cols] -= .001
         df_stu[numeric_cols] = df_stu[numeric_cols].clip_lower(0)
 
@@ -171,7 +171,7 @@ def main(work_dir):
 
 
     makeBar(df_sch)
-    makeKernel(df_sch)
+    makeKernel(df_stu)
 
     return df_stu, df_sch
 
