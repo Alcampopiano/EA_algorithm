@@ -3,11 +3,26 @@ To use this software, cd to the folder containing the code and type the followin
 import EA_algorithm as ea
 df_stu, df_sch = ea.main('path/to/the/datafiles/')
 
-
 The example tables that were downloaded along with the code include:
 1) example_data.csv - the input data set
 2) example_map.csv - the mapped values for each area of measurement (these row labels must match the column headers in the dataset)
 3) params.csv - this hold all the parameters (file names, amount to allocate, etc...)
+
+
+Copyright (C) 2017  Allan Campopiano
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>
 """
 
 import os
