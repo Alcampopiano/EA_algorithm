@@ -1,12 +1,24 @@
 """
 To use this software, cd to the folder containing the code and type the following in a python console:
 import EA_algorithm as ea
-df_stu, df_sch = ea.main('path/to/the/datafiles/')
+df_stu, df_sch = ea.main('path/to/the/datafiles/', level_1='Level 1', level_2='Level 2', level_3='Level 3', level_4='Level 4')
+
+The command just shown has several arguments:
+    - the path to the files you are working with
+    - the rules for finding and replacing. For example, for strings:
+
+        level_1='Level 1:', level_2='Level 2:', level_3='Level 3:', level_4='Level 4:'
+
+        For integers:
+
+        level_1=1, level_2=2, level_3=3, level_4=4
+
+        Any pattern can be used in this way by simply specifying the string patters or numerical values that exist in your raw data file
 
 The example tables that were downloaded along with the code include:
 1) example_data.csv - the input data set
 2) example_map.csv - the mapped values for each area of measurement (these row labels must match the column headers in the dataset)
-3) params.csv - this hold all the parameters (file names, amount to allocate, etc...)
+3) params.csv - this hold all the parameters (file names, amount to allocate, clipping values, etc...)
 
 
 Copyright (C) 2017  Allan Campopiano
@@ -32,7 +44,7 @@ import datetime
 from matplotlib import pyplot as plt
 from scipy import stats
 
-def init(params_df, map_df):
+def init(params_df, map_df, **kwargs):
 
     df=pd.read_csv(params_df['fname'][0])
     df_stu=pd.DataFrame(columns=[])
@@ -53,22 +65,45 @@ def init(params_df, map_df):
 
             if df[c][stu] is not np.nan:
 
-                if 'Level 4:' in df[c][stu]:
-                    n = map_df.loc[c]['level 4']
+                try:
 
-                elif 'Level 3:' in df[c][stu]:
-                    n = map_df.loc[c]['level 3']
 
-                elif 'Level 2:' in df[c][stu]:
-                    n = map_df.loc[c]['level 2']
+                    if kwargs['level_4'] in df[c][stu]:
+                        n = map_df.loc[c]['level_4']
 
-                elif 'Level 1:' in df[c][stu]:
-                    n = map_df.loc[c]['level 1']
+                    elif kwargs['level_3'] in df[c][stu]:
+                        n = map_df.loc[c]['level_3']
 
-                else:
-                    n=np.nan
+                    elif kwargs['level_2'] in df[c][stu]:
+                        n = map_df.loc[c]['level_2']
 
-                nums.append(n)
+                    elif kwargs['level_1'] in df[c][stu]:
+                        n = map_df.loc[c]['level_1']
+
+                    else:
+                        n=np.nan
+
+                    nums.append(n)
+
+                except TypeError:
+
+                    if kwargs['level_4'] == df[c][stu]:
+                        n = map_df.loc[c]['level_4']
+
+                    elif kwargs['level_3'] == df[c][stu]:
+                        n = map_df.loc[c]['level_3']
+
+                    elif kwargs['level_2'] == df[c][stu]:
+                        n = map_df.loc[c]['level_2']
+
+                    elif kwargs['level_1'] == df[c][stu]:
+                        n = map_df.loc[c]['level_1']
+
+                    else:
+                        n = np.nan
+
+                    nums.append(n)
+
 
             elif df[c][stu] is np.nan:
                 nums.append(np.nan)
@@ -88,18 +123,19 @@ def adjust_values(df_stu, params_df, map_df, stop_flag=False):
         df_stu[lab]=df_stu[inds].mean(axis=1)
 
     df_stu['mean']=df_stu[grp_labels].agg('mean', axis=1)
-    df_sch=df_stu.groupby(['school', 'family'])[['mean']].sum()
+    df_sch = df_stu.groupby(['school'])[['mean']].sum()
     df_stu.drop('mean', axis=1, inplace=True)
-    df_sch.rename(columns={'mean':'prop_of_EAs'}, inplace=True)
 
-    total=df_sch['prop_of_EAs'].round().sum()
-    diff=abs(params_df['limit'][0]-total)
-    numeric_cols = [c for c in df_stu if df_stu[c].dtype.kind == 'f']
+    total = df_sch['mean'].sum()
+    diff = params_df['limit'][0] - total
 
-    if diff < params_df['tolerance'][0]:
-        df_stu['mean'] = df_stu.agg('mean', axis=1)
-        df_sch['num_of_EAs']=df_sch['prop_of_EAs'].round()
-        df_sch.drop('prop_of_EAs', axis=1, inplace=True)
+    cols = map_df.index
+
+    if (0 <= diff <= params_df['tolerance'][0]) and (total <= params_df['limit'][0]):
+
+        df_stu['mean'] = df_stu[grp_labels].agg('mean', axis=1)
+        df_sch['num_of_EAs'] = df_sch['mean']
+        df_sch.drop('mean', axis=1, inplace=True)
 
         # fill log file
         makeLog(params_df, total, map_df, df_stu, df_sch)
@@ -107,11 +143,14 @@ def adjust_values(df_stu, params_df, map_df, stop_flag=False):
         stop_flag=True
 
     elif total<params_df['limit'][0]:
-        df_stu[numeric_cols] += .001
+
+        df_stu[cols] += .001
+        df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
 
     elif total>params_df['limit'][0]:
-        df_stu[numeric_cols] -= .001
-        df_stu[numeric_cols] = df_stu[numeric_cols].clip_lower(0)
+
+        df_stu[cols] -= .001
+        df_stu[cols] = df_stu[cols].clip_lower(params_df['clip_lower'][0])
 
     return df_sch, df_stu, stop_flag
 
@@ -135,6 +174,8 @@ def makeLog(params_df, total, map_df, df_stu, df_sch):
     new_log['number_allocated'] = total
     new_log['date'] = stamp
     new_log['map']=map_df.to_string()
+    new_log['clip_upper'] = params_df['clip_upper'][0]
+    new_log['clip_lower'] = params_df['clip_lower'][0]
     new_log['output_files']=fname1 + '\n' + fname2 + stamp + '.csv'
 
     # output files
@@ -149,7 +190,7 @@ def makeLog(params_df, total, map_df, df_stu, df_sch):
     else:
         new_log.to_csv('log.csv', index=False)
 
-def main(work_dir):
+def main(work_dir, **replacement_rules):
 
     # paths
     os.chdir(work_dir)
@@ -163,7 +204,7 @@ def main(work_dir):
     stop_flag=False
 
     # read data, set up initial df
-    df_stu = init(params_df, map_df)
+    df_stu = init(params_df, map_df, **replacement_rules)
 
     while not stop_flag:
         # iter until optimized
@@ -201,7 +242,8 @@ def makeBar(df_sch):
 
     ix=[]
     for i in range(len(df_sch.index)):
-        ix.append(df_sch.index[i][0])
+        #ix.append(df_sch.index[i][0])
+        ix.append(df_sch.index[i])
 
 
     df = pd.DataFrame({'labs': ix, 'data': df_sch['num_of_EAs'].values})
@@ -219,7 +261,7 @@ def makeKernel(df_stu):
 
     fig, ax = plt.subplots(1)
     data=df_stu['mean']
-    density = stats.kde.gaussian_kde(data)
+    density = stats.kde.gaussian_kde(data[~data.isnull()])
     density.set_bandwidth(.3)
     x = np.arange(0., 1, .01)
     ax.plot(x, density(x))

@@ -1,2 +1,2 @@
-fname,mapname,limit,real_limit,tolerance
-example_data.csv,example_map.csv,42,50,3
+fname,mapname,limit,real_limit,tolerance,clip_upper,clip_lower
+example_data.csv,example_map.csv,42,50,2,0.6,0
