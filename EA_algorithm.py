@@ -20,7 +20,6 @@ The example tables that were downloaded along with the code include:
 2) example_map.csv - the mapped values for each area of measurement (these row labels must match the column headers in the dataset)
 3) params.csv - this hold all the parameters (file names, amount to allocate, clipping values, etc...)
 
-
 Copyright (C) 2017  Allan Campopiano
 
 This program is free software: you can redistribute it and/or modify
@@ -44,19 +43,33 @@ import datetime
 from matplotlib import pyplot as plt
 from scipy import stats
 
-def init(params_df, map_df, **kwargs):
+def init(params_df, map_df):
 
     df=pd.read_csv(params_df['fname'][0])
-    df_stu=pd.DataFrame(columns=[])
 
+    # LOWER CASING COLUMNS IN PARAMS FILE
+    #df.columns = [x.lower() for x in df.columns]
+    df_stu=pd.DataFrame(columns=[])
     cols=map_df.index
+
+    # keep_cols=params_df['keep_cols'][0].split(sep='\n')
+    # keep_cols=[k.strip() for k in keep_cols]
+    #keep_cols[keep_cols.index('School')].lower()
+    #print(keep_cols)
+    #keep_cols=[x.lower() for x in keep_cols if x == 'School']
+    #print(keep_cols)
+
+    #if 'school' not in keep_cols:
+    #    print('MUST HAVE SCHOOL IN PARAMS FILE UNDER KEEP_COLS')
+
+    # adding desired columns to the output file
+    # for keep in keep_cols:
+    #     df_stu[keep]=df[keep]
 
     df_stu['student']=df['Student Name']
     df_stu['school']=df['School']
     df_stu['family']=df['Family of Schools']
     df_stu['grade']=df['Grade']
-    df_stu['student']=df['Student Name']
-    df_stu['DOB']=df['Student Date of Birth']
 
     for c in cols:
         nums=[]
@@ -67,17 +80,16 @@ def init(params_df, map_df, **kwargs):
 
                 try:
 
-
-                    if kwargs['level_4'] in df[c][stu]:
+                    if params_df['L4_replace'][0] in df[c][stu]:
                         n = map_df.loc[c]['level_4']
 
-                    elif kwargs['level_3'] in df[c][stu]:
+                    elif params_df['L3_replace'][0] in df[c][stu]:
                         n = map_df.loc[c]['level_3']
 
-                    elif kwargs['level_2'] in df[c][stu]:
+                    elif params_df['L2_replace'][0] in df[c][stu]:
                         n = map_df.loc[c]['level_2']
 
-                    elif kwargs['level_1'] in df[c][stu]:
+                    elif params_df['L1_replace'][0] in df[c][stu]:
                         n = map_df.loc[c]['level_1']
 
                     else:
@@ -87,16 +99,16 @@ def init(params_df, map_df, **kwargs):
 
                 except TypeError:
 
-                    if kwargs['level_4'] == df[c][stu]:
+                    if params_df['L4_replace'] == df[c][stu]:
                         n = map_df.loc[c]['level_4']
 
-                    elif kwargs['level_3'] == df[c][stu]:
+                    elif params_df['L3_replace'] == df[c][stu]:
                         n = map_df.loc[c]['level_3']
 
-                    elif kwargs['level_2'] == df[c][stu]:
+                    elif params_df['L2_replace'] == df[c][stu]:
                         n = map_df.loc[c]['level_2']
 
-                    elif kwargs['level_1'] == df[c][stu]:
+                    elif params_df['L1_replace'] == df[c][stu]:
                         n = map_df.loc[c]['level_1']
 
                     else:
@@ -143,14 +155,16 @@ def adjust_values(df_stu, params_df, map_df, stop_flag=False):
         stop_flag=True
 
     elif total<params_df['limit'][0]:
-
+        print('herer')
         df_stu[cols] += .001
         df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
 
     elif total>params_df['limit'][0]:
+        print('here now')
 
         df_stu[cols] -= .001
         df_stu[cols] = df_stu[cols].clip_lower(params_df['clip_lower'][0])
+        df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
 
     return df_sch, df_stu, stop_flag
 
@@ -190,13 +204,14 @@ def makeLog(params_df, total, map_df, df_stu, df_sch):
     else:
         new_log.to_csv('log.csv', index=False)
 
-def main(work_dir, **replacement_rules):
-
-    # paths
-    os.chdir(work_dir)
+def main():
 
     # load params
     params_df=pd.read_csv('params.csv')
+
+    # paths
+    # os.chdir(work_dir)
+    os.chdir(params_df['working_directory'][0])
 
     # inital values
     map_df=pd.read_csv(params_df['mapname'][0], index_col=0)
@@ -204,7 +219,7 @@ def main(work_dir, **replacement_rules):
     stop_flag=False
 
     # read data, set up initial df
-    df_stu = init(params_df, map_df, **replacement_rules)
+    df_stu = init(params_df, map_df)
 
     while not stop_flag:
         # iter until optimized
