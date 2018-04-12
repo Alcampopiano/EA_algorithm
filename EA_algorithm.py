@@ -97,18 +97,18 @@ def init(params_df, map_df):
 
                     nums.append(n)
 
-                except TypeError:
+                except:
 
-                    if params_df['L4_replace'] == df[c][stu]:
+                    if params_df['L4_replace'][0] == df[c][stu]:
                         n = map_df.loc[c]['level_4']
 
-                    elif params_df['L3_replace'] == df[c][stu]:
+                    elif params_df['L3_replace'][0] == df[c][stu]:
                         n = map_df.loc[c]['level_3']
 
-                    elif params_df['L2_replace'] == df[c][stu]:
+                    elif params_df['L2_replace'][0] == df[c][stu]:
                         n = map_df.loc[c]['level_2']
 
-                    elif params_df['L1_replace'] == df[c][stu]:
+                    elif params_df['L1_replace'][0] == df[c][stu]:
                         n = map_df.loc[c]['level_1']
 
                     else:
