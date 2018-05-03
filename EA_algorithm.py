@@ -138,6 +138,8 @@ def adjust_values(df_stu, params_df, map_df, stop_flag=False):
     df_sch = df_stu.groupby(['school'])[['mean']].sum()
     df_stu.drop('mean', axis=1, inplace=True)
 
+    # nearest half int
+    df_sch=df_sch.apply(lambda x: round(x * 2) / 2)
     total = df_sch['mean'].sum()
     diff = params_df['limit'][0] - total
 
@@ -155,12 +157,12 @@ def adjust_values(df_stu, params_df, map_df, stop_flag=False):
         stop_flag=True
 
     elif total<params_df['limit'][0]:
-        print('herer')
+        #print('herer')
         df_stu[cols] += .001
         df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
 
     elif total>params_df['limit'][0]:
-        print('here now')
+        #print('here now')
 
         df_stu[cols] -= .001
         df_stu[cols] = df_stu[cols].clip_lower(params_df['clip_lower'][0])
@@ -225,7 +227,7 @@ def main():
         # iter until optimized
         df_sch, df_stu, stop_flag = adjust_values(df_stu, params_df, map_df, stop_flag=stop_flag)
 
-
+    plt.ion()
     makeBar(df_sch)
     makeKernel(df_stu)
 
@@ -271,6 +273,7 @@ def makeBar(df_sch):
     plt.subplots_adjust(bottom=.4)
     ax.grid(axis='y')
     ax.set_axisbelow(True)
+    plt.show()
 
 def makeKernel(df_stu):
 
@@ -280,5 +283,6 @@ def makeKernel(df_stu):
     density.set_bandwidth(.3)
     x = np.arange(0., 1, .01)
     ax.plot(x, density(x))
+    plt.show()
 
 
