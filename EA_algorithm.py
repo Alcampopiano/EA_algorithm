@@ -147,6 +147,7 @@ def adjust_values(df_stu, params_df, map_df, stop_flag=False):
 
     if (0 <= diff <= params_df['tolerance'][0]) and (total <= params_df['limit'][0]):
 
+        #df_stu.fillna(0, inplace=True)
         df_stu['mean'] = df_stu[grp_labels].agg('mean', axis=1)
         df_sch['num_of_EAs'] = df_sch['mean']
         df_sch.drop('mean', axis=1, inplace=True)
@@ -158,15 +159,17 @@ def adjust_values(df_stu, params_df, map_df, stop_flag=False):
 
     elif total<params_df['limit'][0]:
         #print('herer')
-        df_stu[cols] += .001
+        df_stu[cols]=df_stu[cols][df_stu[cols] > 0] + .001
+        df_stu.fillna(0,inplace=True)
+        #df_stu[cols] += .001
         df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
 
     elif total>params_df['limit'][0]:
         #print('here now')
-
         df_stu[cols] -= .001
         df_stu[cols] = df_stu[cols].clip_lower(params_df['clip_lower'][0])
         df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
+        df_stu.fillna(0,inplace=True)
 
     return df_sch, df_stu, stop_flag
 
