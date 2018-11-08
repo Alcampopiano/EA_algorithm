@@ -1,5 +1,5 @@
-work_dir,fname,mapname,limit,real_limit,tolerance,number_allocated,date,map,clip_upper,clip_lower,output_files
-/media/allan/solid/code/modules/EA_algorithm,example_data.csv,example_map.csv,75,80,1,74.0,2018-05-28 16:01:51,"                                                   level_1  level_2  level_3  level_4  group
+work_dir,fname,mapname,limit,real_limit,tolerance,number_allocated,balance,EAs_to_add,date,map,clip_upper,clip_lower,output_files
+/media/allan/solid/code/modules/EA_algorithm,example_data.csv,example_map.csv,75,80,1,78.0,-3.0,3.0,2018-11-08 14:47:17,"                                                   level_1  level_2  level_3  level_4  group
 Adaptive Functioning: Toileting                        0.8      0.6      0.4        0      1
 Adaptive Functioning: Feeding                          0.8      0.6      0.4        0      1
 Adaptive Functioning:  Dressing                        0.8      0.6      0.4        0      1
@@ -16,5 +16,43 @@ Safety:  Use of Alternative Learning Environment       0.6      0.4      0.2    
 Communication: Overall Level                           0.8      0.6      0.4        0      4
 Social/Emotional: Overall Level                        0.6      0.6      0.2        0      5
 Academics: Overall Level                               0.8      0.6      0.4        0      6
-Community/Leisure/Work: Overall Level                  0.8      0.6      0.4        0      7",0.8,0,"student_level_report_2018-05-28_16_01_51.csv
-school_level_report_2018-05-28_16_01_51.csv2018-05-28 16:01:51.csv"
+Community/Leisure/Work: Overall Level                  0.8      0.6      0.4        0      7",0.8,0,"student_level_report_2018-11-08_14_47_17.csv
+school_level_report_2018-11-08_14_47_17.csv2018-11-08 14:47:17.csv"
+/media/allan/solid/code/modules/EA_algorithm,example_data.csv,example_map.csv,75,80,1,78.0,-3.0,3.0,2018-11-08 15:23:25,"                                                   level_1  level_2  level_3  level_4  group
+Adaptive Functioning: Toileting                        0.8      0.6      0.4        0      1
+Adaptive Functioning: Feeding                          0.8      0.6      0.4        0      1
+Adaptive Functioning:  Dressing                        0.8      0.6      0.4        0      1
+Adaptive Functioning: Mobility                         0.8      0.6      0.4        0      1
+Adaptive Functioning: Personal Hygiene                 0.8      0.6      0.4        0      1
+Health Medical:  Lifting/Transferring/Positioning      0.8      0.6      0.4        0      2
+Health/Medical: Catheterization                        0.8      0.6      0.4        0      2
+Health/Medical: Nursing Care                           0.8      0.6      0.4        0      2
+Health Medical: Seizures                               0.8      0.6      0.4        0      2
+Safety: Self Injurious                                 0.6      0.4      0.2        0      3
+Safety: Behaviour Injurious To Others                  0.6      0.4      0.2        0      3
+Safety:  Support To Self-Regulate                      0.6      0.4      0.2        0      3
+Safety:  Use of Alternative Learning Environment       0.6      0.4      0.2        0      3
+Communication: Overall Level                           0.8      0.6      0.4        0      4
+Social/Emotional: Overall Level                        0.6      0.6      0.2        0      5
+Academics: Overall Level                               0.8      0.6      0.4        0      6
+Community/Leisure/Work: Overall Level                  0.8      0.6      0.4        0      7",0.8,0,"student_level_report_2018-11-08_15_23_25.csv
+school_level_report_2018-11-08_15_23_25.csv2018-11-08 15:23:25.csv"
+/media/allan/solid/code/modules/EA_algorithm,example_data.csv,example_map.csv,75,80,1,78.0,-3.0,3.0,2018-11-08 15:28:58,"                                                   level_1  level_2  level_3  level_4  group
+Adaptive Functioning: Toileting                        0.8      0.6      0.4        0      1
+Adaptive Functioning: Feeding                          0.8      0.6      0.4        0      1
+Adaptive Functioning:  Dressing                        0.8      0.6      0.4        0      1
+Adaptive Functioning: Mobility                         0.8      0.6      0.4        0      1
+Adaptive Functioning: Personal Hygiene                 0.8      0.6      0.4        0      1
+Health Medical:  Lifting/Transferring/Positioning      0.8      0.6      0.4        0      2
+Health/Medical: Catheterization                        0.8      0.6      0.4        0      2
+Health/Medical: Nursing Care                           0.8      0.6      0.4        0      2
+Health Medical: Seizures                               0.8      0.6      0.4        0      2
+Safety: Self Injurious                                 0.6      0.4      0.2        0      3
+Safety: Behaviour Injurious To Others                  0.6      0.4      0.2        0      3
+Safety:  Support To Self-Regulate                      0.6      0.4      0.2        0      3
+Safety:  Use of Alternative Learning Environment       0.6      0.4      0.2        0      3
+Communication: Overall Level                           0.8      0.6      0.4        0      4
+Social/Emotional: Overall Level                        0.6      0.6      0.2        0      5
+Academics: Overall Level                               0.8      0.6      0.4        0      6
+Community/Leisure/Work: Overall Level                  0.8      0.6      0.4        0      7",0.8,0,"student_level_report_2018-11-08_15_28_58.csv
+school_level_report_2018-11-08_15_28_58.csv2018-11-08 15:28:58.csv"

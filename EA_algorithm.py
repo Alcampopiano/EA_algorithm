@@ -1,19 +1,7 @@
 """
 To use this software, cd to the folder containing the code and type the following in a python console:
 import EA_algorithm as ea
-df_stu, df_sch = ea.main('path/to/the/datafiles/', level_1='Level 1', level_2='Level 2', level_3='Level 3', level_4='Level 4')
-
-The command just shown has several arguments:
-    - the path to the files you are working with
-    - the rules for finding and replacing. For example, for strings:
-
-        level_1='Level 1:', level_2='Level 2:', level_3='Level 3:', level_4='Level 4:'
-
-        For integers:
-
-        level_1=1, level_2=2, level_3=3, level_4=4
-
-        Any pattern can be used in this way by simply specifying the string patters or numerical values that exist in your raw data file
+df_stu, df_sch = ea.main()
 
 The example tables that were downloaded along with the code include:
 1) example_data.csv - the input data set
@@ -48,23 +36,8 @@ def init(params_df, map_df):
     df=pd.read_csv(params_df['fname'][0])
 
     # LOWER CASING COLUMNS IN PARAMS FILE
-    #df.columns = [x.lower() for x in df.columns]
     df_stu=pd.DataFrame(columns=[])
     cols=map_df.index
-
-    # keep_cols=params_df['keep_cols'][0].split(sep='\n')
-    # keep_cols=[k.strip() for k in keep_cols]
-    #keep_cols[keep_cols.index('School')].lower()
-    #print(keep_cols)
-    #keep_cols=[x.lower() for x in keep_cols if x == 'School']
-    #print(keep_cols)
-
-    #if 'school' not in keep_cols:
-    #    print('MUST HAVE SCHOOL IN PARAMS FILE UNDER KEEP_COLS')
-
-    # adding desired columns to the output file
-    # for keep in keep_cols:
-    #     df_stu[keep]=df[keep]
 
     df_stu['student']=df['Student Name']
     df_stu['school']=df['School']
@@ -135,112 +108,10 @@ def get_grand_avgs(df_stu, map_df):
         df_stu[lab]=df_stu[inds].mean(axis=1)
 
     df_stu['mean']=df_stu[grp_labels].agg('mean', axis=1)
-    #df_sch = df_stu.groupby(['school'])[['mean']].sum()
-    #df_stu.drop('mean', axis=1, inplace=True)
-
-    # # nearest half int
-    # df_sch=df_sch.apply(lambda x: round(x * 2) / 2)
-    # total = df_sch['mean'].sum()
-    # diff = params_df['limit'][0] - total
-    #
-    # #cols = map_df.index
-    #
-    # if (0 <= diff <= params_df['tolerance'][0]) and (total <= params_df['limit'][0]):
-    #
-    #     #df_stu.fillna(0, inplace=True)
-    #
-    #     #df_stu['mean'] = df_stu[grp_labels].agg('mean', axis=1)
-    #
-    #     df_sch['num_of_EAs'] = df_sch['mean']
-    #     df_sch.drop('mean', axis=1, inplace=True)
-    #
-    #     # fill log file
-    #     makeLog(params_df, total, map_df, df_stu, df_sch)
-    #
-    #     stop_flag=True
-    #
-    # elif total<params_df['limit'][0]:
-    #     print('up' + str(total), str(params_df['limit'][0]))
-    #     #df_zeros = df_stu[cols]==0
-    #     # df_stu=df_stu.add((df_stu.select_dtypes(exclude=object) > 0) * .001).combine_first(df_stu) # or even better df[cols] += np.where(df[cols] >0, 0.01, 0)
-    #     #df_stu[cols]
-    #     #df_stu.fillna(0,inplace=True)
-    #     df_stu['mean']+=.001
-    #     df_stu['mean'] = df_stu['mean'].clip_upper(params_df['clip_upper'][0])
-    #     #df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
-    #
-    # elif total>params_df['limit'][0]:
-    #     print('down' + str(total), str(params_df['limit'][0]))
-    #
-    #     df_stu['mean']-=.001
-    #     df_stu['mean'] = df_stu['mean'].clip_lower(params_df['clip_lower'][0])
-    #
-    #     #df_stu[cols] -= .001
-    #     #df_stu[cols] = df_stu[cols].clip_lower(params_df['clip_lower'][0])
-    #     #df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
-    #     #df_stu.fillna(0,inplace=True)
 
     return df_stu
 
-def adjust_values(df_stu, params_df, map_df, stop_flag=False):
-
-    # grp_labels = ['group ' + str(g) for g in map_df['group'].unique()]
-    # group_nums = map_df['group'].unique()
-    #
-    # for lab, num in zip(grp_labels, group_nums):
-    #     inds = map_df[map_df['group'] == num].index
-    #     df_stu[lab]=df_stu[inds].mean(axis=1)
-    #
-    # df_stu['mean']=df_stu[grp_labels].agg('mean', axis=1)
-    # df_sch = df_stu.groupby(['school'])[['mean']].sum()
-    # #df_stu.drop('mean', axis=1, inplace=True)
-
-    # nearest half int
-    df_sch = df_stu.groupby(['school'])[['mean']].sum()
-    df_sch=df_sch.apply(lambda x: round(x * 2) / 2)
-    total = df_sch['mean'].sum()
-    diff = params_df['limit'][0] - total
-
-    #cols = map_df.index
-
-    if (0 <= diff <= params_df['tolerance'][0]) and (total <= params_df['limit'][0]):
-
-        #df_stu.fillna(0, inplace=True)
-
-        #df_stu['mean'] = df_stu[grp_labels].agg('mean', axis=1)
-
-        df_sch['num_of_EAs'] = df_sch['mean']
-        df_sch.drop('mean', axis=1, inplace=True)
-
-        # fill log file
-        makeLog(params_df, total, map_df, df_stu, df_sch)
-
-        stop_flag=True
-
-    elif total<params_df['limit'][0]:
-        print('up' + str(total), str(params_df['limit'][0]))
-        #df_zeros = df_stu[cols]==0
-        # df_stu=df_stu.add((df_stu.select_dtypes(exclude=object) > 0) * .001).combine_first(df_stu) # or even better df[cols] += np.where(df[cols] >0, 0.01, 0)
-        #df_stu[cols]
-        #df_stu.fillna(0,inplace=True)
-        df_stu['mean']+=.001
-        df_stu['mean'] = df_stu['mean'].clip_upper(params_df['clip_upper'][0])
-        #df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
-
-    elif total>params_df['limit'][0]:
-        print('down' + str(total), str(params_df['limit'][0]))
-
-        df_stu['mean']-=.001
-        df_stu['mean'] = df_stu['mean'].clip_lower(params_df['clip_lower'][0])
-
-        #df_stu[cols] -= .001
-        #df_stu[cols] = df_stu[cols].clip_lower(params_df['clip_lower'][0])
-        #df_stu[cols] = df_stu[cols].clip_upper(params_df['clip_upper'][0])
-        #df_stu.fillna(0,inplace=True)
-
-    return df_sch, df_stu, stop_flag
-
-def makeLog(params_df, total, map_df, df_stu, df_sch):
+def makeLog(params_df, map_df, df_stu, df_sch):
 
     stamp=str(datetime.datetime.now()).split('.')[0]
     fname1='student_level_report_' + stamp + '.csv'
@@ -257,7 +128,9 @@ def makeLog(params_df, total, map_df, df_stu, df_sch):
     new_log['limit'] = params_df['limit']
     new_log['real_limit'] = params_df['real_limit']
     new_log['tolerance'] = params_df['tolerance']
-    new_log['number_allocated'] = total
+    new_log['number_allocated'] = df_sch['numEAs'].sum()
+    new_log['balance'] = params_df['limit']-df_sch['numEAs'].sum()
+    new_log['EAs_to_add'] = df_sch['numEAs'].sum() - params_df['limit']
     new_log['date'] = stamp
     new_log['map']=map_df.to_string()
     new_log['clip_upper'] = params_df['clip_upper'][0]
@@ -288,7 +161,7 @@ def main():
     # inital values
     map_df=pd.read_csv(params_df['mapname'][0], index_col=0)
 
-    stop_flag=False
+    #stop_flag=False
 
     # read data, set up initial df
     df_stu = init(params_df, map_df)
@@ -296,9 +169,15 @@ def main():
     # get initital averages
     df_stu = get_grand_avgs(df_stu, map_df)
 
-    while not stop_flag:
-        # iter until optimized
-        df_sch, df_stu, stop_flag = adjust_values(df_stu, params_df, map_df, stop_flag=stop_flag)
+    # redistribute
+    df_stu, df_sch=redistribute(df_stu, params_df)
+
+    # fill log file
+    makeLog(params_df, map_df, df_stu, df_sch)
+
+    # while not stop_flag:
+    #     # iter until optimized
+    #     df_sch, df_stu, stop_flag = adjust_values(df_stu, params_df, map_df, stop_flag=stop_flag)
 
     plt.ion()
     makeBar(df_sch)
@@ -336,7 +215,7 @@ def makeBar(df_sch):
         ix.append(df_sch.index[i])
 
 
-    df = pd.DataFrame({'labs': ix, 'data': df_sch['num_of_EAs'].values})
+    df = pd.DataFrame({'labs': ix, 'data': df_sch['numEAs'].values})
     df=df.sort_values('data')
 
     fig, ax = plt.subplots(1)
@@ -351,11 +230,51 @@ def makeBar(df_sch):
 def makeKernel(df_stu):
 
     fig, ax = plt.subplots(1)
-    data=df_stu['mean']
+    data=df_stu['numEAs']
     density = stats.kde.gaussian_kde(data[~data.isnull()])
     density.set_bandwidth(.3)
     x = np.arange(0., 1, .01)
     ax.plot(x, density(x))
     plt.show()
+
+def redistribute(df_stu, params_df):
+
+    limit=params_df['limit'][0]
+    cur_total=df_stu['mean'].sum()
+    cur_diff=limit-cur_total
+    df_stu['numEAs']=df_stu['mean']
+    new_sum=df_stu['numEAs'].sum()
+    zero_or_nan_records = (df_stu['mean'] == 0) | (df_stu['mean'].isna())
+
+    while new_sum != limit:
+        if cur_diff>=0:
+            to_redistribute = cur_diff / len(df_stu)
+            df_stu['numEAs'] = df_stu['numEAs'] + to_redistribute
+            df_stu.loc[zero_or_nan_records, 'numEAs'] = 0
+            df_stu['numEAs'].clip_upper(params_df['clip_upper'][0], inplace=True)
+
+        else:
+            to_redistribute = abs(cur_diff) / len(df_stu)
+            df_stu['numEAs'] = df_stu['numEAs'] - to_redistribute
+            df_stu['numEAs'].clip_upper(params_df['clip_lower'][0], inplace=True)
+
+        new_sum=df_stu['numEAs'].sum().round(5)
+        cur_diff = limit - new_sum
+
+    # nearest half int
+    df_sch = df_stu.groupby(['school'])[['numEAs']].sum()
+    df_sch=df_sch.apply(lambda x: round(x * 2) / 2)
+    #df_sch = df_sch.apply(lambda x: np.floor(x * 2) / 2)
+
+    return df_stu, df_sch
+
+
+
+
+
+
+
+
+
 
 
