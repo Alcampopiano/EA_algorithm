@@ -135,7 +135,8 @@ def makeLog(params_df, map_df, df_stu, df_sch):
     new_log['map']=map_df.to_string()
     new_log['clip_upper'] = params_df['clip_upper'][0]
     new_log['clip_lower'] = params_df['clip_lower'][0]
-    new_log['output_files']=fname1 + '\n' + fname2 + stamp + '.csv'
+    #new_log['output_files']=fname1 + '\n' + fname2 + stamp + '.csv'
+    new_log['output_files'] = fname1 + '\n' + fname2
 
     # output files
     df_stu.to_csv(fname1, index=False)
@@ -256,7 +257,8 @@ def redistribute(df_stu, params_df):
         else:
             to_redistribute = abs(cur_diff) / len(df_stu)
             df_stu['numEAs'] = df_stu['numEAs'] - to_redistribute
-            df_stu['numEAs'].clip_upper(params_df['clip_lower'][0], inplace=True)
+            #df_stu['numEAs'].clip_upper(params_df['clip_lower'][0], inplace=True)
+            df_stu['numEAs'].clip_lower(params_df['clip_lower'][0], inplace=True)
 
         new_sum=df_stu['numEAs'].sum().round(5)
         cur_diff = limit - new_sum
